@@ -1,0 +1,7 @@
+
+> neiroUstaz-server@1.0.0 seed
+> node src/db/seed.js
+
+✅ SQLite database initialized
+🌱 Seeding database...
+✅ Seeding completed
