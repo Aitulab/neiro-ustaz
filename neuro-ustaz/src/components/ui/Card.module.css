@@ -1,0 +1,23 @@
+.card {
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  transition: all 200ms ease;
+}
+
+.elevated {
+  background: var(--color-surface-lowest);
+  box-shadow: var(--shadow-card);
+}
+.elevated:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.gradient {
+  background: var(--gradient-primary);
+  color: #ffffff;
+}
+.gradient:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}

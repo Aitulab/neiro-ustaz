@@ -1,0 +1,147 @@
+.postCard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.authorInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar, .avatarPlaceholder {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+}
+
+.avatar {
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  background: var(--gradient-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.avatarSmall, .avatarPlaceholderSmall {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+}
+
+.avatarSmall {
+  object-fit: cover;
+}
+
+.avatarPlaceholderSmall {
+  background: var(--color-secondary-container);
+  color: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.authorName {
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+.metaTag {
+  font-size: 0.8125rem;
+  color: var(--color-outline);
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.body {
+  color: var(--color-on-surface-variant);
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-surface-container);
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-outline);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  transition: all 200ms ease;
+}
+
+.actionBtn:hover {
+  background: var(--color-surface-low);
+  color: var(--color-primary);
+}
+
+.actionBtn span {
+  font-size: 20px;
+}
+
+.comments {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--color-surface-low);
+  padding: 24px;
+  border-radius: var(--radius-md);
+}
+
+.comment {
+  display: flex;
+  gap: 12px;
+}
+
+.commentContent {
+  flex: 1;
+}
+
+.commentHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.commentAuthor {
+  font-weight: 700;
+  font-size: 0.9375rem;
+}
+
+.commentBody {
+  font-size: 0.9375rem;
+  color: var(--color-on-surface-variant);
+  line-height: 1.5;
+}
+
+.replyBtn {
+  margin-top: 8px;
+}
