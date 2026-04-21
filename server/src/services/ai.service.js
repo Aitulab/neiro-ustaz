@@ -53,7 +53,19 @@ export async function chatStream(userId, message) {
 
     return stream;
   } catch (err) {
-    console.error('Groq API error:', err.message);
+    console.error('❌ Groq API Error:', {
+      message: err.message,
+      status: err.status,
+      name: err.name
+    });
+
+    if (err.status === 429) {
+      const error = new Error('Лимит запросов к ИИ исчерпан. Пожалуйста, подождите минуту.');
+      error.status = 429;
+      error.code = 'AI_RATE_LIMIT';
+      throw error;
+    }
+
     const error = new Error('ИИ-помощник временно недоступен. Попробуйте позже.');
     error.status = 503;
     error.code = 'AI_UNAVAILABLE';
@@ -75,7 +87,14 @@ export async function generate(prompt) {
 
     return completion.choices[0]?.message?.content || '';
   } catch (err) {
-    console.error('Groq Generate error:', err.message);
+    console.error('❌ Groq Generate Error:', err.message, '| Status:', err.status);
+    
+    if (err.status === 429) {
+      const error = new Error('Лимит генерации исчерпан.');
+      error.status = 429;
+      throw error;
+    }
+
     const error = new Error('Ошибка генерации.');
     error.status = 503;
     throw error;

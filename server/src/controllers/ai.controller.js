@@ -1,14 +1,19 @@
 import { chatStream, saveChatMessages, getChatHistory, clearChatHistory, generate } from '../services/ai.service.js';
 
 export async function sendMessage(req, res, next) {
+  const requestId = Math.random().toString(36).substring(7);
+  const startTime = Date.now();
+  
   try {
     const { message } = req.body;
+    console.log(`[${requestId}] 💬 AI Chat Request from user ${req.user.id}`);
 
     if (!message || !message.trim()) {
       return res.status(400).json({ error: 'Сообщение не может быть пустым', code: 'VALIDATION_ERROR' });
     }
 
     const stream = await chatStream(req.user.id, message.trim());
+    console.log(`[${requestId}] 🚀 Stream started in ${Date.now() - startTime}ms`);
     
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
@@ -18,7 +23,6 @@ export async function sendMessage(req, res, next) {
     let fullReply = '';
 
     for await (const chunk of stream) {
-
       const content = chunk.choices[0]?.delta?.content || '';
       fullReply += content;
       if (content) {
@@ -29,11 +33,12 @@ export async function sendMessage(req, res, next) {
     saveChatMessages(req.user.id, message.trim(), fullReply);
     res.write('data: [DONE]\n\n');
     res.end();
+    console.log(`[${requestId}] ✅ Request completed in ${Date.now() - startTime}ms`);
   } catch (err) {
+    console.error(`[${requestId}] ❌ AI Controller Error after ${Date.now() - startTime}ms:`, err.message);
     if (!res.headersSent) {
       next(err);
     } else {
-      console.error('Stream error:', err);
       res.end();
     }
   }

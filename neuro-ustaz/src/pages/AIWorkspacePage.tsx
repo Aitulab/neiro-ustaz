@@ -148,8 +148,24 @@ const AIWorkspacePage: React.FC = () => {
       });
 
       if (!response.ok) {
-         const errorData = await response.json().catch(() => ({}));
-         throw new Error(errorData.error || (lang === 'kk' ? 'Жауап алу мүмкін болмады' : 'Не удалось получить ответ'));
+         let errorMessage = lang === 'kk' ? 'Күтпеген қате орын алды' : 'Произошла непредвиденная ошибка';
+         
+         try {
+           const errorData = await response.json();
+           errorMessage = errorData.error || errorMessage;
+         } catch {
+           // Fallback for non-JSON errors (like 503 from Render)
+           if (response.status === 503) {
+             errorMessage = lang === 'kk' 
+               ? 'Сервер уақытша қолжетімсіз. Шамалы уақыттан кейін қайта байқап көріңіз (503).' 
+               : 'Сервер временно недоступен. Пожалуйста, попробуйте позже (503).';
+           } else if (response.status === 429) {
+              errorMessage = lang === 'kk'
+                ? 'Сұраныс лимиті асып кетті. Бірнеше минут күте тұрыңыз.'
+                : 'Лимит запросов исчерпан. Пожалуйста, подождите немного.';
+           }
+         }
+         throw new Error(errorMessage);
       }
       
       if (!response.body) throw new Error('No body');
@@ -205,9 +221,9 @@ const AIWorkspacePage: React.FC = () => {
         { 
           id: `error_${Date.now()}`, 
           role: 'assistant', 
-          content: lang === 'kk' 
+          content: err.message || (lang === 'kk' 
             ? 'Кешіріңіз, қате орын алды. Қайтадан байқап көріңіз.' 
-            : 'Извините, произошла ошибка. Пожалуйста, попробуйте еще раз.',
+            : 'Извините, произошла ошибка. Пожалуйста, попробуйте еще раз.'),
           createdAt: new Date().toISOString() 
         }
       ]);
