@@ -8,15 +8,17 @@ export async function sendMessage(req, res, next) {
       return res.status(400).json({ error: 'Сообщение не может быть пустым', code: 'VALIDATION_ERROR' });
     }
 
+    const stream = await chatStream(req.user.id, message.trim());
+    
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     if (res.flushHeaders) res.flushHeaders();
 
-    const stream = await chatStream(req.user.id, message.trim());
     let fullReply = '';
 
     for await (const chunk of stream) {
+
       const content = chunk.choices[0]?.delta?.content || '';
       fullReply += content;
       if (content) {
