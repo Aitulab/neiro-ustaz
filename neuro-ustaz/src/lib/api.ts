@@ -15,6 +15,9 @@ const getApiUrl = () => {
 };
 
 const API_URL = getApiUrl();
+if (typeof window !== 'undefined') {
+  (window as any)._API_DEBUG_URL = API_URL;
+}
 
 const api = axios.create({
   baseURL: API_URL,

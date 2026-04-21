@@ -241,14 +241,24 @@ const AuthPage: React.FC = () => {
                  {error && (
                     <div className="bg-red-50 border border-red-200 text-red-600 px-5 py-4 rounded-[16px] text-[13px] font-bold flex items-start gap-2">
                        <span className="material-symbols-outlined mt-0.5 text-[18px]">error</span>
-                       <p>
-                          {error === 'invalid_credentials'
-                            ? (lang === 'kk' ? 'Пошта/нөмір немесе құпия сөз қате' : 'Неверная почта/номер или пароль')
-                            : error === 'no_user'
-                              ? (lang === 'kk' ? 'Сайтқа кіру үшін алдымен тіркеліңіз' : 'Для входа сначала зарегистрируйтесь')
-                              : (error.length < 100 ? error : (lang === 'kk' ? 'Деректерді толтыру барысында қате болды' : 'Ошибка при заполнении данных'))
-                          }
-                       </p>
+                       <div className="flex flex-col gap-1">
+                          <p>
+                             {error === 'invalid_credentials'
+                               ? (lang === 'kk' ? 'Пошта/нөмір немесе құпия сөз қате' : 'Неверная почта/номер или пароль')
+                               : error === 'no_user'
+                                 ? (lang === 'kk' ? 'Сайтқа кіру үшін алдымен тіркеліңіз' : 'Для входа сначала зарегистрируйтесь')
+                                 : (error.length < 100 ? error : (lang === 'kk' ? 'Деректерді толтыру барысында қате болды' : 'Ошибка при заполнении данных'))
+                             }
+                          </p>
+                          <div className="text-[10px] opacity-50 font-normal">
+                             API: {(() => {
+                               try {
+                                 // Simple way to get the base URL without extra imports if it's already in the bundle
+                                 return (window as any)._API_DEBUG_URL || 'checking...';
+                               } catch { return 'unknown'; }
+                             })()}
+                          </div>
+                       </div>
                     </div>
                  )}
 
