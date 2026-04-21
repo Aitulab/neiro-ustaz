@@ -49,7 +49,7 @@ export async function chatStream(userId, message) {
   try {
     const stream = await groq.chat.completions.create({
       messages,
-      model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+      model: process.env.GROQ_MODEL || 'llama-3.1-8b-instant',
       temperature: 0.5,
       max_tokens: 4096,
       stream: true
