@@ -2,7 +2,7 @@ import { registerUser, loginUser } from '../services/auth.service.js';
 
 export async function register(req, res, next) {
   try {
-    const { full_name, email, phone, password } = req.body;
+    const { full_name, email, phone, password, university } = req.body;
 
     // Validation
     if (!full_name || !full_name.trim()) {
@@ -15,7 +15,13 @@ export async function register(req, res, next) {
       return res.status(400).json({ error: 'Пароль должен содержать минимум 6 символов', code: 'VALIDATION_ERROR' });
     }
 
-    const result = await registerUser({ full_name: full_name.trim(), email: email.trim().toLowerCase(), phone, password });
+    const result = await registerUser({ 
+      full_name: full_name.trim(), 
+      email: email.trim().toLowerCase(), 
+      phone, 
+      password,
+      university: university || null
+    });
 
     res.status(201).json({
       success: true,

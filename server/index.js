@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 3001;
 // CORS — allow frontend
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-  : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:4173'];
+  : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:4173', 'https://neiro-ustaz.vercel.app'];
 
 app.use(cors({
   origin: (origin, callback) => {

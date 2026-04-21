@@ -1,7 +1,20 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// Fallback to production URL if we are in production but VITE_API_URL is missing
+const getApiUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl) return envUrl;
+  
+  if (import.meta.env.PROD) {
+    // If we are on Vercel but forgot the variable, try to point to the known Render URL
+    return 'https://neiro-ustaz-backend.onrender.com/api';
+  }
+  
+  return 'http://localhost:3001/api';
+};
+
+const API_URL = getApiUrl();
 
 const api = axios.create({
   baseURL: API_URL,

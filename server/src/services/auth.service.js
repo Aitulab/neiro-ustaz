@@ -25,7 +25,7 @@ function normalizePhone(phone) {
   return digits;
 }
 
-export async function registerUser({ full_name, email, phone, password }) {
+export async function registerUser({ full_name, email, phone, password, university }) {
   const normalizedPhone = normalizePhone(phone);
 
   // Check if email or phone already exists
@@ -42,9 +42,9 @@ export async function registerUser({ full_name, email, phone, password }) {
 
   // Insert user
   const result = db.prepare(`
-    INSERT INTO users (full_name, email, phone, password)
-    VALUES (?, ?, ?, ?)
-  `).run(full_name, email, normalizedPhone, hashedPassword);
+    INSERT INTO users (full_name, email, phone, password, university)
+    VALUES (?, ?, ?, ?, ?)
+  `).run(full_name, email, normalizedPhone, hashedPassword, university || null);
 
   const user = db.prepare(`
     SELECT id, full_name, email, phone, university, year, lang, points, level, created_at

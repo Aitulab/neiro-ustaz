@@ -1,6 +1,10 @@
 import Groq from 'groq-sdk';
 import db from '../db/index.js';
 
+if (!process.env.GROQ_API_KEY) {
+  console.error('⚠️ WARNING: GROQ_API_KEY is not set in environment variables!');
+}
+
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY
 });
