@@ -238,24 +238,19 @@ const AuthPage: React.FC = () => {
                    </div>
                 )}
 
-                {error && (
-                   <div className="bg-red-50 border border-red-200 text-red-600 px-5 py-4 rounded-[16px] text-[13px] font-bold flex items-start gap-2">
-                      <span className="material-symbols-outlined mt-0.5 text-[18px]">error</span>
-                      <p>
-                         {error === 'invalid_credentials'
-                           ? lang === 'kk'
-                             ? 'Пошта/нөмір немесе құпия сөз қате'
-                             : 'Неверная почта/номер или пароль'
-                           : error === 'no_user'
-                             ? lang === 'kk'
-                               ? 'Сайтқа кіру үшін алдымен тіркеліңіз'
-                               : 'Для входа сначала зарегистрируйтесь'
-                             : lang === 'kk'
-                               ? 'Деректерді толтыру барысында қате болды'
-                               : 'Ошибка при заполнении данных'}
-                      </p>
-                   </div>
-                )}
+                 {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-600 px-5 py-4 rounded-[16px] text-[13px] font-bold flex items-start gap-2">
+                       <span className="material-symbols-outlined mt-0.5 text-[18px]">error</span>
+                       <p>
+                          {error === 'invalid_credentials'
+                            ? (lang === 'kk' ? 'Пошта/нөмір немесе құпия сөз қате' : 'Неверная почта/номер или пароль')
+                            : error === 'no_user'
+                              ? (lang === 'kk' ? 'Сайтқа кіру үшін алдымен тіркеліңіз' : 'Для входа сначала зарегистрируйтесь')
+                              : (error.length < 100 ? error : (lang === 'kk' ? 'Деректерді толтыру барысында қате болды' : 'Ошибка при заполнении данных'))
+                          }
+                       </p>
+                    </div>
+                 )}
 
                 <button 
                   className="w-full bg-[#0f172a] text-white py-4 rounded-[16px] font-bold text-[15px] shadow-lg shadow-slate-900/10 hover:opacity-90 active:scale-[0.98] transition-all mt-6"
