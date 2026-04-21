@@ -95,9 +95,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(mapBackendUser(user));
         return { ok: true };
       }
-      return { ok: false, message: res.data.message };
+      return { ok: false, message: res.data.error || 'registration_failed' };
     } catch (err: any) {
-      return { ok: false, message: err.response?.data?.message || 'registration_failed' };
+      return { ok: false, message: err.response?.data?.error || 'registration_failed' };
     }
   }, []);
 
@@ -110,9 +110,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(mapBackendUser(user));
         return { ok: true };
       }
-      return { ok: false, message: res.data.message };
+      return { ok: false, message: res.data.error || 'invalid_credentials' };
     } catch (err: any) {
-      return { ok: false, message: err.response?.data?.message || 'invalid_credentials' };
+      return { ok: false, message: err.response?.data?.error || 'invalid_credentials' };
     }
   }, []);
 
