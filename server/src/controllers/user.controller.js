@@ -1,4 +1,17 @@
-import { getProfile, updateProfile } from '../services/user.service.js';
+import { getProfile, updateProfile, getAllUsers } from '../services/user.service.js';
+
+export function listAllUsers(req, res, next) {
+  try {
+    const users = getAllUsers();
+    res.json({
+      success: true,
+      count: users.length,
+      users
+    });
+  } catch (err) {
+    next(err);
+  }
+}
 
 export function me(req, res, next) {
   try {

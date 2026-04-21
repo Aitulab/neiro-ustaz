@@ -134,12 +134,9 @@ const AIWorkspacePage: React.FC = () => {
 
     try {
       const token = Cookies.get('token');
-      if (!token) {
-        console.error('No token found in cookies');
-      }
-      
       const baseUrl = api.defaults.baseURL;
       const currentLang = localStorage.getItem('neiroustaz_lang') || 'kk';
+      
       const response = await fetch(`${baseUrl}/ai/chat`, {
         method: 'POST',
         headers: {
@@ -151,13 +148,14 @@ const AIWorkspacePage: React.FC = () => {
       });
 
       if (!response.ok) {
-         console.error('Response status:', response.status);
-         throw new Error(lang === 'kk' ? 'Жауап алу мүмкін болмады. Код: ' + response.status : 'Не удалось получить ответ. Код: ' + response.status);
+         const errorData = await response.json().catch(() => ({}));
+         throw new Error(errorData.error || (lang === 'kk' ? 'Жауап алу мүмкін болмады' : 'Не удалось получить ответ'));
       }
-      if (!response.body) throw new Error('No body in response');
+      
+      if (!response.body) throw new Error('No body');
 
       const reader = response.body.getReader();
-      const decoder = new TextDecoder('utf-8');
+      const decoder = new TextDecoder();
       
       const replyMsgId = `reply_${Date.now()}`;
       setMessages(prev => [
@@ -166,41 +164,58 @@ const AIWorkspacePage: React.FC = () => {
         { id: replyMsgId, role: 'assistant', content: '', createdAt: new Date().toISOString() }
       ]);
       
-      let done = false;
-      while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
-        if (value) {
-           const chunkStr = decoder.decode(value, { stream: true });
-           const lines = chunkStr.split('\n');
-           
-           for (const line of lines) {
-             if (line.startsWith('data: ')) {
-                const data = line.slice(6).trim();
-                if (data === '[DONE]') continue;
-                try {
-                  const parsed = JSON.parse(data);
-                  if (parsed.content) {
-                    setMessages(prev => prev.map(m => 
-                      m.id === replyMsgId ? { ...m, content: m.content + parsed.content } : m
-                    ));
-                  }
-                } catch (e) {
-                   // ignore partial parse errors
-                }
-             }
-           }
-           scrollToBottom();
+      let buffer = '';
+      
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        
+        const lines = buffer.split('\n');
+        // Keep the last partial line in the buffer
+        buffer = lines.pop() || '';
+        
+        for (const line of lines) {
+          const trimmedLine = line.trim();
+          if (!trimmedLine || !trimmedLine.startsWith('data: ')) continue;
+          
+          const data = trimmedLine.slice(6);
+          if (data === '[DONE]') continue;
+          
+          try {
+            const parsed = JSON.parse(data);
+            if (parsed.content) {
+              setMessages(prev => prev.map(m => 
+                m.id === replyMsgId ? { ...m, content: m.content + parsed.content } : m
+              ));
+            }
+          } catch (e) {
+            console.error('Error parsing SSE data:', e, data);
+          }
         }
+        scrollToBottom();
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('AI Request failed:', err);
-      // Remove loading temporary message on error
-      setMessages(prev => prev.filter(m => !m.id.startsWith('temp_')));
+      // Replace the loading message with an error message
+      setMessages(prev => [
+        ...prev.filter(m => !m.id.startsWith('temp_')),
+        { 
+          id: `error_${Date.now()}`, 
+          role: 'assistant', 
+          content: lang === 'kk' 
+            ? 'Кешіріңіз, қате орын алды. Қайтадан байқап көріңіз.' 
+            : 'Извините, произошла ошибка. Пожалуйста, попробуйте еще раз.',
+          createdAt: new Date().toISOString() 
+        }
+      ]);
     } finally {
       setIsTyping(false);
       scrollToBottom();
     }
+
   };
 
   return (

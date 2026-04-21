@@ -12,6 +12,10 @@ function calculateLevel(points) {
   return 1;
 }
 
+export function getAllUsers() {
+  return db.prepare('SELECT id, full_name, email, phone, role, created_at FROM users ORDER BY id DESC').all();
+}
+
 export function getProfile(userId, lang = 'ru') {
   const user = db.prepare(`
     SELECT id, full_name, email, phone, university, year, lang, points, level, created_at

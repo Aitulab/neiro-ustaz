@@ -64,29 +64,36 @@ const TASK_GEN_PROMPT_KZ = `Сен инклюзивті білім беру бо
 
 МАҢЫЗДЫ: ТЕК валидті JSON қайтар, markdown жоқ, ешқандай қосымша түсіндірме жазба. Барлық мәтін ЖОҒАРЫ ДЕҢГЕЙЛІ ҚАЗАҚ ТІЛІНДЕ болуы шарт.`;
 
-async function generateTask(lang = 'ru') {
+async function generateTask(lang = 'ru', retryCount = 0) {
   const prompt = lang === 'kz' ? TASK_GEN_PROMPT_KZ : TASK_GEN_PROMPT_RU;
 
-  const completion = await groq.chat.completions.create({
-    messages: [
-      { role: 'system', content: prompt },
-      { role: 'user', content: lang === 'kz' ? 'Жаңа тапсырма жаса' : 'Сгенерируй новое задание' }
-    ],
-    model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
-    temperature: 0.9,
-    max_tokens: 1024
-  });
+  try {
+    const completion = await groq.chat.completions.create({
+      messages: [
+        { role: 'system', content: prompt },
+        { role: 'user', content: lang === 'kz' ? 'Жаңа тапсырма жаса' : 'Сгенерируй новое задание' }
+      ],
+      model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+      temperature: 0.7, // Lower temperature for more consistent JSON
+      max_tokens: 1024
+    });
 
-  const raw = completion.choices[0]?.message?.content || '';
+    const raw = completion.choices[0]?.message?.content || '';
 
-  // Try to extract JSON from response
-  const jsonMatch = raw.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    throw new Error('Failed to parse task JSON from AI');
+    // Try to extract JSON from response
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      if (retryCount < 2) return generateTask(lang, retryCount + 1);
+      throw new Error('Failed to parse task JSON from AI');
+    }
+
+    return JSON.parse(jsonMatch[0]);
+  } catch (err) {
+    if (retryCount < 2) return generateTask(lang, retryCount + 1);
+    throw err;
   }
-
-  return JSON.parse(jsonMatch[0]);
 }
+
 
 export async function getTodayTask(userId, lang = 'ru') {
   const today = new Date().toISOString().split('T')[0];
